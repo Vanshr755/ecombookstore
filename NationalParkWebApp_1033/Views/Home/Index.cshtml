@@ -1,0 +1,130 @@
+﻿@model NationalParkWebApp_1033.Models.ViewModels.IndexVM
+
+<style>
+    /* Custom CSS to polish DataTables Search Bar & Entries Dropdown */
+    .dataTables_wrapper .dataTables_length select {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        outline: none;
+        margin: 0 6px;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        outline: none;
+        margin-left: 8px;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+</style>
+
+<div class="container backgroundWhite pb-4">
+    <!-- Master table wrapper to enable unified DataTables search and pagination -->
+    <table id="nationalParkDataTable" class="table table-borderless p-0 m-0 w-100">
+        <thead class="d-none">
+            <tr>
+                <th>National Park Content</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model?.NationalParkList!=null)
+           {
+            @foreach (var nationalPark in Model.NationalParkList)
+            {
+                <tr>
+                    <td class="p-0 border-0">
+                        <!-- ORIGINAL CARD DESIGN -->
+                        <div class="card border mb-4">
+                            <div class="card-header bg-dark text-light ml-0 row container">
+                                <div class="col-12 col-md-6">
+                                    <h1 class="text-warning">Name:@nationalPark.Name</h1>
+                                </div>
+                                <div class="col-12 col-md-6 text-md-right">
+                                    <h1 class="text-warning">State : @nationalPark.State</h1>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="container rounded p-2">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-8">
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h3 style="color:#bbb9b9">Established:@nationalPark.Established.Year </h3>
+                                                </div>
+                                                <div class="col-12">
+                                                    @{
+                                                        var trails = Model.TrailList.Where(t => t.NationalParkId == nationalPark.Id);
+                                                    }
+                                                    <table class="table table-striped" style="border:1px solid #808080 ">
+                                                        <thead>
+                                                            <tr class="table-secondary">
+                                                                <th>Trail</th>
+                                                                <th>Distance</th>
+                                                                <th>Elevation Gain</th>
+                                                                <th>Difficulty</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var trail in trails)
+                                                            {
+                                                                <tr>
+                                                                    <td>@trail.Name</td>
+                                                                    <td>@trail.Distance</td>
+                                                                    <td>@trail.Elevation</td>
+                                                                    <td>@trail.Difficulty</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-lg-4 text-center">
+                                            @if (nationalPark.Picture != null)
+                                            {
+                                                var base64 = Convert.ToBase64String(nationalPark.Picture);
+                                                var imgSrc = String.Format("data:image/jpg;base64,{0}", base64);
+                                                <img src="@imgSrc" class="card-img-top p-2 rounded" width="100%" />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }}
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#nationalParkDataTable').DataTable({
+                "ordering": false,
+                "lengthMenu": [1, 2, 5, 10],
+                "pageLength": 5,
+                "language": {
+                    "search": "Search Parks/Trails:",
+                    "searchPlaceholder": "Type to filter..."
+                }
+            });
+        });
+    </script>
+}
